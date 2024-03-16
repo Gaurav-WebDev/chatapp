@@ -27,8 +27,7 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', (msg) => {
     if (socket.nickname) {
-      const messageWithNickname = `${socket.nickname}: ${msg}`;
-      io.emit('chat message', messageWithNickname);
+      io.emit('chat message', `${socket.nickname}: ${msg}`);
     }
   });
 
