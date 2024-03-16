@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        #form {
+            background-color: #f3f3f3;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            display: flex;
+            width: 100%;
+            gap: 30px;
+        }
+
+        #form input {
+            height: 30px;
+            width: 80%;
+            padding: 0px 10px;
+            border-radius: 10px;
+        }
+
+        #form button {
+            height: 30px;
+            width: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat App</h1>
+    <ul id="messages"></ul>
+    <form id="form">
+        <input type="text" placeholder="Enter your message" id="input">
+        <button type="submit">Send</button>
+    </form>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        let nickname = prompt("Enter your name:")
+        if (nickname.length > 0) {
+            socket.emit("setNickname", nickname)
+        }
+        else {
+            alert("Enter a name")
+            nickname = prompt("Enter your name:")
+        }
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                console.log(input.value)
+                socket.emit('chat message', `${nickname} : ${input.value}`);
+                input.value = '';
+            }
+        });
+
+        socket.on('userJoined', (msg) => {
+            const item = document.createElement('li');
+            item.innerHTML = msg;
+            messages.appendChild(item)
+        })
+
+        socket.on('userLeft', (msg) => {
+            const item = document.createElement('li');
+            item.innerHTML = msg;
+            messages.appendChild(item)
+        })
+
+        socket.on('chat message', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            messages.appendChild(item);
+        });
+
+
+    </script>
+</body>
+
+</html>
