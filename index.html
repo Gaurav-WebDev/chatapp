@@ -16,6 +16,12 @@
         body {
             height: 100%;
             width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
         }
 
         #form {
@@ -35,19 +41,59 @@
             width: 80%;
             padding: 0px 10px;
             border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: border-color 0.3s ease;
+        }
+
+        #form input:focus {
+            outline: none;
+            border-color: dodgerblue;
         }
 
         #form button {
             height: 30px;
             width: 10%;
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        #messages{
+        #form button:hover {
+            background-color: #0056b3;
+        }
+
+        #messages {
             list-style: none;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100% - 160px); /* Adjust as needed */
         }
 
-        #messages li:nth-child(odd){
+        #messages li {
             background-color: #c1b7b7;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+
+        #messages li:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .userJoined {
+            color: green;
+        }
+
+        .userLeft {
+            color: red;
+        }
+
+        .userEnteredChat {
+            color: dodgerblue;
+            font-style: italic;
         }
     </style>
 </head>
@@ -64,13 +110,12 @@
     <script>
         const socket = io();
 
-        let nickname = prompt("Enter your name:")
-        if (nickname.length > 0) {
-            socket.emit("setNickname", nickname)
-        }
-        else {
-            alert("Enter a name")
-            nickname = prompt("Enter your name:")
+        let nickname = prompt("Enter your name:");
+        if (nickname && nickname.trim() !== "") {
+            socket.emit("setNickname", nickname.trim());
+        } else {
+            alert("Please enter a name.");
+            window.location.reload();
         }
 
         const form = document.getElementById('form');
@@ -79,24 +124,25 @@
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (input.value) {
-                console.log(input.value)
-                socket.emit('chat message', `${nickname} : ${input.value}`);
+            if (input.value.trim() !== "") {
+                socket.emit('chat message', `${nickname.trim()} : ${input.value.trim()}`);
                 input.value = '';
             }
         });
 
         socket.on('userJoined', (msg) => {
             const item = document.createElement('li');
-            item.innerHTML = msg;
-            messages.appendChild(item)
-        })
+            item.textContent = msg;
+            item.classList.add('userJoined');
+            messages.appendChild(item);
+        });
 
         socket.on('userLeft', (msg) => {
             const item = document.createElement('li');
-            item.innerHTML = msg;
-            messages.appendChild(item)
-        })
+            item.textContent = msg;
+            item.classList.add('userLeft');
+            messages.appendChild(item);
+        });
 
         socket.on('chat message', (msg) => {
             const item = document.createElement('li');
@@ -104,7 +150,12 @@
             messages.appendChild(item);
         });
 
-
+        socket.on('userEnteredChat', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = msg;
+            item.classList.add('userEnteredChat');
+            messages.appendChild(item);
+        });
     </script>
 </body>
 
