@@ -9,6 +9,7 @@
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         html,
@@ -23,7 +24,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 10px;
+            padding: 10px 0px;
             display: flex;
             width: 100%;
             gap: 30px;
@@ -39,6 +40,14 @@
         #form button {
             height: 30px;
             width: 10%;
+        }
+
+        #messages{
+            list-style: none;
+        }
+
+        #messages li:nth-child(odd){
+            background-color: #c1b7b7;
         }
     </style>
 </head>
