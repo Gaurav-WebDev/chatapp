@@ -33,12 +33,12 @@
             padding: 10px 0px;
             display: flex;
             width: 100%;
-            gap: 30px;
+            gap: 10px;
         }
 
         #form input {
+            flex: 1;
             height: 30px;
-            width: 80%;
             padding: 0px 10px;
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -52,7 +52,7 @@
 
         #form button {
             height: 30px;
-            width: 10%;
+            width: 60px;
             background-color: dodgerblue;
             color: white;
             border: none;
@@ -69,18 +69,15 @@
             list-style: none;
             padding: 20px;
             overflow-y: auto;
-            height: calc(100% - 160px); /* Adjust as needed */
+            height: calc(100% - 140px); /* Adjust as needed */
         }
 
         #messages li {
-            background-color: #c1b7b7;
-            padding: 10px;
+            max-width: 70%;
             margin-bottom: 10px;
+            padding: 10px;
             border-radius: 10px;
-        }
-
-        #messages li:nth-child(even) {
-            background-color: #f2f2f2;
+            word-wrap: break-word;
         }
 
         .userJoined {
@@ -94,6 +91,31 @@
         .userEnteredChat {
             color: dodgerblue;
             font-style: italic;
+        }
+
+        .message {
+            background-color: #c1b7b7;
+            align-self: flex-start;
+        }
+
+        .message.sent {
+            background-color: dodgerblue;
+            color: white;
+            align-self: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            #form input {
+                width: 70%;
+            }
+
+            #form button {
+                width: 30%;
+            }
+
+            #messages li {
+                max-width: 90%;
+            }
         }
     </style>
 </head>
@@ -125,7 +147,7 @@
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (input.value.trim() !== "") {
-                socket.emit('chat message', `${nickname.trim()} : ${input.value.trim()}`);
+                socket.emit('chat message', input.value.trim());
                 input.value = '';
             }
         });
@@ -147,6 +169,10 @@
         socket.on('chat message', (msg) => {
             const item = document.createElement('li');
             item.textContent = msg;
+            item.classList.add('message');
+            if (msg.includes(nickname.trim())) {
+                item.classList.add('sent');
+            }
             messages.appendChild(item);
         });
 
