@@ -104,74 +104,56 @@
     <script>
         const socket = io();
         let nickname = prompt("Enter your name:");
-
+    
         if (nickname && nickname.trim() !== "") {
             socket.emit("setNickname", nickname.trim());
         } else {
             alert("Please enter a name.");
             window.location.reload();
         }
-
+    
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
         const sendButton = document.getElementById('sendButton');
-
-        let lastSender = '';
-
+    
         function sendMessage() {
             const message = input.value.trim();
             if (message !== "") {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = `${nickname.trim()}: ${message}`;
-                messageElement.classList.add('message', 'sent');
-                messages.appendChild(messageElement);
-                messages.scrollTop = messages.scrollHeight;
                 socket.emit('chat message', message);
                 input.value = '';
             }
         }
-
+    
         sendButton.addEventListener('click', sendMessage);
         input.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
-
+    
         socket.on('userJoined', (msg) => {
             const joinMessage = document.createElement('div');
             joinMessage.textContent = msg;
             messages.appendChild(joinMessage);
             messages.scrollTop = messages.scrollHeight;
         });
-
+    
         socket.on('userLeft', (msg) => {
             const leaveMessage = document.createElement('div');
             leaveMessage.textContent = msg;
             messages.appendChild(leaveMessage);
             messages.scrollTop = messages.scrollHeight;
         });
-
+    
         socket.on('chat message', (msg) => {
-            const sender = msg.substring(0, msg.indexOf(':')).trim();
-            const messageContent = msg.substring(msg.indexOf(':') + 1).trim();
-
-            if (sender !== lastSender) {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = `${sender}: ${messageContent}`;
-                messageElement.classList.add('message', 'received');
-                messages.appendChild(messageElement);
-                messages.scrollTop = messages.scrollHeight;
-                lastSender = sender;
-            } else {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = messageContent;
-                messageElement.classList.add('message', 'received');
-                messages.appendChild(messageElement);
-                messages.scrollTop = messages.scrollHeight;
-            }
+            const messageElement = document.createElement('div');
+            messageElement.textContent = msg;
+            messageElement.classList.add('message', 'received');
+            messages.appendChild(messageElement);
+            messages.scrollTop = messages.scrollHeight;
         });
     </script>
+    
 </body>
 
 </html>
